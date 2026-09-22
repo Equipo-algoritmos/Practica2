@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <time.h>
+#include <conio.h>
 #include <windows.h>
 
 float calcularMediana(int arreglo[], int m){
@@ -17,10 +19,10 @@ float calcularMediana(int arreglo[], int m){
 }
 
 void printArr(int arreglo[], int m, char *msj){
-	printf("%s", msj);
+	printf("%s|", msj);
 	for (int i = 0; i < m; ++i)
 	{
-		printf(" %3d |", arreglo[i]);
+		printf(" %5d |", arreglo[i]);
 		if(((i+1)%10==0)&&i!=(m-1))
 			printf("\n|");
 	}
@@ -44,7 +46,7 @@ void llenarArreglo(int arreglo[], int m, char *select){
     if (select == "ordenado")
     {
         for (int i = 0; i < m; i++){
-            arreglo[i] = i;
+            arreglo[i] = i+1;
         }
     }
     if (select == "invertido")
@@ -102,7 +104,7 @@ void insercion(int arreglo[], int m){
 void insercionPasos(int arreglo[], int m){
     int copia[m];
     llenarArreglo(copia, m, "cero");
-    printf("\n\n%-64s%s\n", "Arreglo Ordenado", "Datos por Ordenar");
+    printf("\n\n%-84s%s\n", "Arreglo Ordenado", "Datos por Ordenar");
     for (int j = 0; j < m; j++){
         int key = arreglo[j];
         int i = j - 1;
@@ -111,12 +113,12 @@ void insercionPasos(int arreglo[], int m){
             i--;
         }
         copia[i + 1] = key;
-        printArr(copia, j + 1, "|");
-        for (int e = 0; e < 64 - (1 + 6 * (j + 1)); e++){
+        printArr(copia, j + 1, "");
+        for (int e = 0; e < 84 - (1 + 8 * (j + 1)); e++){
             printf(" ");
         }
         if (j + 1 < m){
-            printArr(arreglo + j + 1, m - j - 1, "|");
+            printArr(arreglo + j + 1, m - j - 1, "");
         }
         printf("\n");
     }
@@ -329,13 +331,14 @@ void ordenPasos(int arreglo[], int m, int O){
             seleccionPasos(arreglo, m);
         break;        
         case 4:
-            mezclaPasos(arreglo, 0, m);
+            mezclaPasos(arreglo, 0, m - 1);
         break;
     }
 }
 
 double orden(int arreglo[], int m, int O){
     clock_t inicio,fin;
+    printf("\nOrdenando...");
     switch (O) {
         case 1:
             inicio = clock();
@@ -354,57 +357,99 @@ double orden(int arreglo[], int m, int O){
         break;        
         case 4:
             inicio = clock();
-            mezcla(arreglo, 0, m);
+            mezcla(arreglo, 0, m - 1);
             fin = clock();
         break;
     
     }
     double diferencia = (double)(fin - inicio);
+    printf("\rAlgoritmo de ordenamiento ejecutado con exito");
     return diferencia;
 }
 
-void printMenu(){
-    int data[2];
-    llenarArreglo(data, 2, "cero");
-    int op, b;
+int printMenu(int b){
+    int op;
+    system("cls");
+    printf("\tMENU\n");
+    printf("1). Inicializar arreglo.\n");
+    printf("2). Ver arreglo generado.\n");
+    printf("3). Ordenar el arreglo generado.\n");
+    printf("4). Salir del programa.\n");
+    if (b==0)
+        op=pedirEntero("Seleccione una opcion: ");
+    else if (b==1)
+        op=pedirEntero("Seleccione una opcion valida: ");
+    else if(b==2)
+        op=pedirEntero("Primero debes inicializar el arreglo: ");
+    return op;
+}
+
+void iniciar(int data[]){
+    data[0] = pedirEntero("De cuantos valores desea que sea el arreglo? (1 a 1,000,000)\nElige menos de diez para ver los pasos.\n");
+    while (data[0] < 1 || data[0] > 1000000){
+        data[0] = pedirEntero("Cantidad invalida. Ingresa un valor entre 1 y 1,000,000:\n");
+    }
+    //E=data[1]
+    data[1] = pedirEntero("Elige el tipo de arreglo a ordenar:\n1) Arreglo ordenado\t2) Arreglo invertido\t3) Arreglo aleatorio\n");
+    while (data[1] < 1 || data[1] > 3){
+        data[1] = pedirEntero("Opcion invalida. Elige 1, 2 o 3:\n");
+    }
+}
+
+void copiarArr(int destino[], int origen[], int m){
+    memcpy(destino, origen, m * sizeof(int));
+}
+
+void programa1(){
+    int *arreglo=NULL;
+	srand(time(NULL));
+    int data[3];
+    llenarArreglo(data, 3, "cero");
+    int op, b=0, imp;
     do{
-        b = 0;
-        system("cls");
-        printf("\tMENU\n");
-        printf("1). Inicializar arreglo.\n");
-        printf("2). Ordenar el arreglo generado.\n");
-        printf("3). Salir del programa.\n");
-        if (b==0)
-            op=pedirEntero("Seleccione una opcion: ");
-        else if (b==1)
-            op=pedirEntero("Seleccione una opcion valida: ");
-        else if(b==2)
-            op=pedirEntero("Primero debes inicializar el arreglo: ");
+        op = printMenu(b);
         switch (op) {
             case 1:
+                system("cls");
                 //m=data[0]
                 b = 0;
-                data[0] = pedirEntero("De cuantos valores desea que sea el arreglo? (1 a 1000000)\nElige menos de diez para ver los pasos.\n");
-                while (data[0] < 1 || data[0] > 1000000){
-                    data[0] = pedirEntero("Cantidad invalida. Ingresa un valor entre 1 y 1000000:\n");
-                }
-                int *arreglo = malloc((size_t)data[0] * sizeof *arreglo);
+                iniciar(data);
+                arreglo = malloc((size_t)data[0] * sizeof *arreglo);
                 if (arreglo == NULL){
                     printf("No se pudo reservar memoria.\n");
                     return;
                 }
-                //E=data[1]
-            	data[1] = pedirEntero("Elige el tipo de arreglo a ordenar:\n1) Arreglo ordenado\t2) Arreglo invertido\t3) Arreglo aleatorio\n");
-            	while (data[1] < 1 || data[1] > 3){
-            		data[1] = pedirEntero("Opcion invalida. Elige 1, 2 o 3:\n");
-            	}
+                int *original = malloc((size_t)data[0] * sizeof *original);
+                if (original == NULL){
+                    printf("No se pudo reservar memoria.\n");
+                    return;
+                }
                 iniciarArr(arreglo, data[0], data[1]);
-                printArr(arreglo, data[0], "\nArreglo generado:\n");
-                printf("Presiona una tecla para continuar...\n");
-                getchar();
+                copiarArr(original, arreglo, data[0]);
+                imp = pedirEntero("\nDesea ver el Arreglo generado?\t1) Si\t2) No\n");
+                while(0>imp && imp>3){
+                    imp = pedirEntero("\nIngrese una opcion valida: ");
+                }
+                if(imp==1){
+                    printArr(arreglo, data[0], "\nArreglo generado:\n");
+                    printf("\nPresiona una tecla para continuar...\n");
+                    getch();
+                }
                 break;
             case 2:
+                if(data[0]==0 || data[1]==0){
+                    b=2;
+                    break;
+                }
+                system("cls");
+                printArr(original, data[0], "\nArreglo desordenado:\n");
+                printf("\nPresiona una tecla para continuar...\n");
+                getch();
+                break;
+            case 3:
+                system("cls");
                 //O=data[2]
+                copiarArr(arreglo, original, data[0]);
                 b = 0;
                 if(data[0]==0 || data[1]==0){
                     b=2;
@@ -415,7 +460,6 @@ void printMenu(){
                     if(data[0] > 10){
                         double tiempo;
                         tiempo = orden(arreglo, data[0], data[2]);
-                        printArr(arreglo, data[0], "\n\nArreglo Ordenado:\n|");
                         mostrarTiempo(tiempo);
                     }
                     else{
@@ -423,25 +467,25 @@ void printMenu(){
                     }
                     float mediana = calcularMediana(arreglo, data[0]);
                     printf("\n\nLa mediana en el arreglo de numero es: %.2f\n", mediana);
-                    printf("Presiona una tecla para continuar...\n");
-                    getchar();
-                    free(arreglo);
-                    llenarArreglo(data, 2, "cero");
+                    imp = pedirEntero("\nDesea ver el Arreglo ordenado?\t1) Si\t2) No\n");
+                    while(0>imp && imp>3){
+                        imp = pedirEntero("\nIngrese una opcion valida: ");
+                    }
+                    if(imp==1)
+                        printArr(arreglo, data[0], "\n\nArreglo Ordenado:\n");
+                    printf("\nPresiona una tecla para continuar...\n");
+                    getch();
                 }break;
-            case 3:
+            case 4:
                 b = 0;
+                free(arreglo);
                 break;
             default:
                 b=1;
                 break;
 
         }
-    }while(op!=3);
-}
-
-void programa1(){
-	srand(time(NULL));
-    printMenu();
+    }while(op!=4);
 }
 
 int main(int argc, char const *argv[]){
