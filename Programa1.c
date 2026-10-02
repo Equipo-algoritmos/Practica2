@@ -448,6 +448,7 @@ void programa1(){
                 break;
             case 3:
                 system("cls");
+                
                 //O=data[2]
                 copiarArr(arreglo, original, data[0]);
                 b = 0;
